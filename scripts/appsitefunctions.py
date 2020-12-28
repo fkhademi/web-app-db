@@ -53,10 +53,9 @@ def getserverparam(param_name):
     
 	for each in os.environ.keys():	
 		#Uncomment the next line if you want to see all of the values that could be used
-
 		each_value = os.environ[each]
-
 		each_value_string = str(each_value)
+		#print "<pre>%s=%s</pre>" % (each, each_value_string)
 
 		each_string = str(each)
 
@@ -110,7 +109,6 @@ def getserverinfo():
 	#This code establishes a connection to the DNS server to get the host's IP address.  This is to get the real IP address.  
 	sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	sock.connect((finddnsresolver(),53)) # sock.connect(("nameserver",53))
-	ipaddress=(sock.getsockname()[0])
 	sock.close()
 
 	#This get the hostname as defined in /etc/hostname
@@ -118,18 +116,11 @@ def getserverinfo():
 
 	#Use OS environment variables gather information
 	serverport = getserverparam('SERVER_PORT')
-
-	servernames=importconfiguration() 
-	MyFQDN=servernames[3]
+	ipaddress = getserverparam('SERVER_ADDR')
+	servername = getserverparam('SERVER_NAME')
+	serverprotocol = getserverparam('SERVER_PROTOCOL')
 	
-	
-	if getserverparam('REQUEST_SCHEME') != None:  
-		serverprotocol = str.upper(getserverparam('REQUEST_SCHEME'))
-	
-		return (hostname,ipaddress,serverprotocol,serverport,MyFQDN)
-	else:
-		serverprotocol = 'Unknown'
-		return (hostname,ipaddress,serverprotocol,serverport,MyFQDN)
+	return (hostname,ipaddress,serverprotocol,serverport,servername)
 
 	#IF YOU WANT TO FIGURE OUT WHAT VARIABLES CAN BE USED, UNCOMMENT THE NEXT LINE TO ADD OTHER INFORMATION AND REFRESH THE WEBPAGE
 	# cgi.test() 
