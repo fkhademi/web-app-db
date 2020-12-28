@@ -21,7 +21,8 @@ def importconfiguration ():
 		WebServerName = configParser.get('avx-config', 'WebServerName')
 		AppServerName = configParser.get('avx-config', 'AppServerName')
 		DBServerName = configParser.get('avx-config', 'DBServerName')
-		return (WebServerName, AppServerName, DBServerName)
+		MyFQDN = configParser.get('avx-config', 'MyFQDN')
+		return (WebServerName, AppServerName, DBServerName, MyFQDN)
 	else:
 		print 'ERROR: AVX config file ', os.path.realpath('/etc/avx/avx.conf'), 'not found!'
 
@@ -118,15 +119,17 @@ def getserverinfo():
 	#Use OS environment variables gather information
 	serverport = getserverparam('SERVER_PORT')
 
+	servernames=importconfiguration() 
+	MyFQDN=servernames[3]
 	
 	
 	if getserverparam('REQUEST_SCHEME') != None:  
 		serverprotocol = str.upper(getserverparam('REQUEST_SCHEME'))
 	
-		return (hostname,ipaddress,serverprotocol,serverport,fqdn)
+		return (hostname,ipaddress,serverprotocol,serverport,MyFQDN)
 	else:
 		serverprotocol = 'Unknown'
-		return (hostname,ipaddress,serverprotocol,serverport,fqdn)
+		return (hostname,ipaddress,serverprotocol,serverport,MyFQDN)
 
 	#IF YOU WANT TO FIGURE OUT WHAT VARIABLES CAN BE USED, UNCOMMENT THE NEXT LINE TO ADD OTHER INFORMATION AND REFRESH THE WEBPAGE
 	# cgi.test() 
