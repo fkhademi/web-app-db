@@ -142,7 +142,7 @@ def getdbinfo():
 	try:
 		ipaddress = socket.gethostbyname(DBHostname) # your os sends out a dns query
 	except Exception as e:
-		return ("Error","Cannot resolve","Error","Error","Error")
+		return ("Error","Cannot resolve","Error","Error","Error","Down")
 	else:
 		#This get the hostname as defined in /etc/hostname
 		hostname = (socket.gethostname())
