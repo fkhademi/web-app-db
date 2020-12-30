@@ -37,14 +37,14 @@ try:
 	'''
 
 	#Start printing the html for the header row
-	print '<center><h3>View Data</h3></center>'
-	print '<table style="width:100%" border="1">'
-	print '<tr>'
-	print '<td><b>ID</b></td>'
-	print '<td><b>Name</b></td>'
-	print '<td><b>Notes</b></td>'
-	print '<td><b>Timestamp</b></td>'
-	print '</tr>'
+	print '''<center><h3>View Data</h3></center>
+	<table class="table">
+	<tr>
+	<td><b>ID</b></td>
+	<td><b>Name</b></td>
+	<td><b>Notes</b></td>
+	<td><b>Timestamp</b></td>
+	</tr>'''
 
 	#now to print within the table with the contents of the database
 	for each in c.fetchall():
