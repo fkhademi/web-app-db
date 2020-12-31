@@ -155,45 +155,44 @@ def getdbinfo():
 
 def enterdbformhtml():
 	
-	print '<center>'
-	print '<table>'
-	print '<tr>'
-	print '<td>'
-	print '<form action="commitdb-web.py" method="POST" id="usrform">'
-	print '  <b>Name:</b><br>'
-	print '  <input type="text" name="name" value="">'
-	print '  <br><br>'
-	print '  <b>Notes:</b><br>'
-	print '  <textarea rows="6" cols="50" name="notes" form="usrform"></textarea>'
-	print '  <br><br>'
-	print '  <b>Number of records to create:</b><br>'
-	print '  <input type="number" name="count" min="1" max="1000" value="1">'
-	print '  <br><br>'
-	print '  <input type="submit" value="Submit">'
-	print '</form>'
-	print '</td>'
-	print '</tr>'
-	print '</table>'
-	print '</center>'
+	print '''<center>
+	<table>
+	<tr>
+	<td>
+	<form action="commitdb-web.py" method="POST" id="usrform">
+	  <b>Name:</b><br>
+	  <input type="text" name="name" value="">
+	  <br><br>
+	  <b>Notes:</b><br>
+	  <textarea rows="6" cols="50" name="notes" form="usrform"></textarea>
+	  <br><br>
+	  <b>Number of records to create:</b><br>
+	  <input type="number" name="count" min="1" max="1000" value="1">
+	  <br><br>
+	  <input type="submit" value="Submit">
+	</form>
+	</td>
+	</tr>
+	</table>
+	</center>'''
 
 def cleardbformhtml():
 
-	print '<!-- Start of form -->'
-	print '<center>'
-	print '<table>'
-	print '<tr>'
-	print '<td>'
-	print '<form action="cleardb-web.py" method="POST" id="usrform">'
-	print '  <b><br> Enter <font color="red">ERASE </font>to clear the database:</b><br>'
-	print '  <input type="text" name="command" value="">'
-	print '  <br><br>'
-	print '  <input type="submit" value="Submit">'
-	print '</form>'
-	print '</td>'
-	print '</tr>'
-	print '</table>'
-
-	print '</center>'
+	print '''<!-- Start of form -->
+	<center>
+	<table>
+	<tr>
+	<td>
+	<form action="cleardb-web.py" method="POST" id="usrform">
+	  <b><br> Enter <font color="red">ERASE </font>to clear the database:</b><br>
+	  <input type="text" name="command" value="">
+	  <br><br>
+	  <input type="submit" value="Submit">
+	</form>
+	</td>
+	</tr>
+	</table>
+	</center>'''
 
 def printserverinfo(fqdn,hostname,ipaddress,webprotocol,serverport):
 
