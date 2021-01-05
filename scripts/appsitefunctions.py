@@ -147,7 +147,7 @@ def getdbinfo():
 		#This get the hostname as defined in /etc/hostname
 		hostname = (socket.gethostname())
 		hostname = hostname.replace("app", "db")
-		port = 3306
+		port = 443
 		protocol = "TCP"
 		status = "Up"
 		return (DBHostname,hostname,ipaddress,protocol,port,status)
@@ -155,44 +155,28 @@ def getdbinfo():
 
 def enterdbformhtml():
 	
-	print '''<center>
-	<table>
-	<tr>
-	<td>
+	print '''<div class="container" margin:0 auto;>
 	<form action="commitdb-web.py" method="POST" id="usrform">
-	  <b>Name:</b><br>
-	  <input type="text" name="name" value="">
-	  <br><br>
-	  <b>Notes:</b><br>
-	  <textarea rows="6" cols="50" name="notes" form="usrform"></textarea>
-	  <br><br>
-	  <b>Number of records to create:</b><br>
-	  <input type="number" name="count" min="1" max="1000" value="1">
-	  <br><br>
-	  <input type="submit" value="Submit">
-	</form>
-	</td>
-	</tr>
-	</table>
-	</center>'''
 
-def cleardbformhtml():
-
-	print '''<!-- Start of form -->
-	<center>
-	<table>
-	<tr>
-	<td>
-	<form action="cleardb-web.py" method="POST" id="usrform">
-	  <b><br> Enter <font color="red">ERASE </font>to clear the database:</b><br>
-	  <input type="text" name="command" value="">
-	  <br><br>
-	  <input type="submit" value="Submit">
-	</form>
-	</td>
-	</tr>
-	</table>
-	</center>'''
+	<div class="form-group" style="width:600px;> <!-- Name field -->
+		<label class="control-label " for="name">* Name</label>
+		<input class="form-control" id="name" name="name" type="text" required="required"/>
+	</div>
+	
+	<div class="form-group" style="width:600px;> <!-- Email field -->
+		<label class="control-label " for="email">* Email</label>
+		<input class="form-control" id="email" name="email" type="email" required="required"/>
+	</div>
+	
+	<div class="form-group" style="width:600px;> <!-- Comments field -->
+		<label class="control-label " for="comments">Comments</label>
+		<textarea class="form-control" cols="40" id="comments" name="comments" rows="10"></textarea>
+	</div>
+	
+	<div class="form-group">
+		<button class="btn btn-primary " name="submit" type="submit">Submit</button>
+	</div>
+	</form>'''
 
 def printserverinfo(fqdn,hostname,ipaddress,webprotocol,serverport):
 
@@ -230,7 +214,7 @@ def printdbinfo(fqdn,hostname,ipaddress,webprotocol,serverport,status):
 		print '<b>System Time:</b> n/a<br>'
 		print '<b>Status:</b><font color="red"> %s</font><br>' %status
 
-def printsite(modulename,formname_or_cmd,formnotes,formcount):
+def printsite(modulename,form_name,form_email,form_comments):
 
 	if os.path.exists('base.html'):
 		basehtml = open('base.html').read().splitlines()
@@ -314,31 +298,18 @@ def printsite(modulename,formname_or_cmd,formnotes,formcount):
 					print '<b>Status:</b><font color="red"> Down</font><br>'
 
 			if each == '<!-- StartCustom -->':
-				#This uses to value passed from the URL to basically set which .py script is used for this section.
 				if modulename != None:
 					if modulename == 'enterdb':
 						enterdbformhtml()
-					elif modulename == 'resetdb':
-						cleardbformhtml()
 					elif modulename == 'commitdb':
-						#Here formname_or_cmd is used as the NAME which was entered into the form
+						#Here form_name is used as the NAME which was entered into the form
 						try:
-							urlstr = 'http://%s:8080/commitdb-app.py?name=%s&notes=%s&count=%s'%(AppServerHostname,formname_or_cmd,formnotes,formcount)
+							urlstr = 'http://%s:8080/commitdb-app.py?name=%s&email=%s&comments=%s'%(AppServerHostname,form_name,form_email,form_comments)
 							appserverresponse = urllib.urlopen(urlstr)
 							appserverhtml = removehtmlheaders(appserverresponse.read())
 							print appserverhtml
 						except:
-							printappservererror()
-
-					elif modulename == 'cleardb':
-						#Here formname_or_cmd is used as the COMMAND which was entered into the form
-						try:
-							urlstr = 'http://%s:8080/cleardb-app.py?command=%s'%(AppServerHostname,formname_or_cmd)
-							appserverresponse = urllib.urlopen(urlstr)
-							appserverhtml = removehtmlheaders(appserverresponse.read())
-							print appserverhtml
-						except:
-							printappservererror()
+							printdbservererror()
 					else:
 						try:
 							urlstr = 'http://%s:8080/%s.py'%(AppServerHostname,modulename)

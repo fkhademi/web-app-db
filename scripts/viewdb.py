@@ -1,71 +1,66 @@
 #!/usr/bin/python
 
-
-#This is a "module" script, by which I mean that appsitefunctions.loadbasehtml() uses this to create a section of the site.
-
-# Turn on debug mode.
-import cgitb
-cgitb.enable()
 import appsitefunctions
+import boto3
+import json
+import decimal
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-#This section will grab the name of the app server host name from the mtwa.conf file
-servernames=appsitefunctions.importconfiguration() 
-dbServerHostname=servernames[2]
 
-# Connect to the database.
-import pymysql
+
+# Helper class to convert a DynamoDB item to JSON.
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, decimal.Decimal):
+            if o % 1 > 0:
+                return float(o)
+            else:
+                return int(o)
+        return super(DecimalEncoder, self).default(o)
+
 try:
-	conn = pymysql.connect(
-	    db='appdemo',
-	    user='appdemo',
-	    passwd='appdemo',
-	    host=dbServerHostname)
-	c = conn.cursor()
-				
-	#Grab the table data from the database.
-	c.execute("SELECT * FROM demodata")
+	dynamodb = boto3.resource('dynamodb', 'eu-central-1', verify=False)
+	table = dynamodb.Table('build')
+	response = table.scan()
 
-	#Start HTML print out, headers are printed so the Apache server on APP does not produce a malformed header 500 server error
 	print '''
 	<Content-type: text/html\\n\\n>
 	<html>
 	<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 	<title>Multi-Tier Web App</title>
 	</head>
 	<body>
-	<table border="1">
 	'''
 
 	#Start printing the html for the header row
 	print '''<center><h3>View Data</h3></center>
-	<table class="table">
+	<table class="table table-hover">
+	<thead>
 	<tr>
-	<td><b>ID</b></td>
-	<td><b>Name</b></td>
-	<td><b>Notes</b></td>
-	<td><b>Timestamp</b></td>
-	</tr>'''
-
-	#now to print within the table with the contents of the database
-	for each in c.fetchall():
+	<th scope="col">Name</th>
+	<th scope="col">Email</th>
+	<th scope="col">Date</th>
+	<th scope="col">Comment</th>
+	</tr>
+	</thead>
+	<tbody>'''
+	for i in response['Items']:
+		json_str = json.dumps(i, cls=DecimalEncoder)
+		resp_dict = json.loads(json_str)
 		print '<tr>'
-	 	print '<td>',each[0], '</td>'
-	 	print '<td>',each[1], '</td>'
-	 	print '<td>',each[2], '</td>'
-	 	print '<td>',each[3], '</td>'
-	 	print '</tr>'
+		print '<td>%s</td>' %resp_dict.get('name')
+		print '<td>%s</td>' %resp_dict.get('email')
+		print '<td>%s</td>' %resp_dict.get('completed')
+		print '<td>%s</td>' %resp_dict.get('comment')
+		print '</tr>'
 
-	print '</table>'
-	print '</center>'
-
-	#Finish printing headers 
-	print '''
-	</table>
+	print '''</tbody>
+	/table>
 	</body>
 	</html>
 	'''
+
 except:
-	
 	appsitefunctions.printdbservererror()
-
-
