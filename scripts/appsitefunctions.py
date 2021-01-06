@@ -57,9 +57,7 @@ def connectionworks():
 
 
 def getserverparam(param_name):
-
-	# print param_name, "param_name<BR>" #db
-    
+    # This will get session properties like src_port, src_addr, etc
 	for each in os.environ.keys():	
 		#Uncomment the next line if you want to see all of the values that could be used
 		each_value = os.environ[each]
@@ -70,30 +68,10 @@ def getserverparam(param_name):
 		if each_string == param_name:			
 			servervalue = each_value_string
 			return servervalue
-
-
-	return None
-	
-def setcolor(protocolvalue):
-	if protocolvalue == 'HTTP':
-		return 'red'
-	elif protocolvalue == 'HTTPS':
-		return 'green'
-	else:
-		return 'black'
-
-def finddnsresolver():
-	#This function will find the local DNS server to be used in another function for finding the IP address of the host.
-	dnsfile = open('/etc/resolv.conf').read().splitlines()
-	for each in dnsfile:
-		nameserverstring = each[:10]
-		if nameserverstring == "nameserver":
-			dns_ip = each[11:]
-			return dns_ip
 	return None
 
 def removehtmlheaders(htmlcode):
-	#This function is designed to remove the HTML headers that are adder so that Apache on the APP server will not give a 500 error due to bad headers.
+	#This function is designed to remove the HTML headers that are added so that Apache on the APP server will not give a 500 error due to bad headers.
 	splitcode = htmlcode.split('\n')
 
 	#Delete the first 7 elements in the list.  This is the first section of generic HTML code to be removed.
@@ -114,11 +92,6 @@ def removehtmlheaders(htmlcode):
 	return noheaderhtml
 
 def getserverinfo():
-	#This code establishes a connection to the DNS server to get the host's IP address.  This is to get the real IP address.  
-	sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	sock.connect((finddnsresolver(),53)) # sock.connect(("nameserver",53))
-	sock.close()
-
 	#This get the hostname as defined in /etc/hostname
 	hostname = (socket.gethostname())
 
@@ -186,8 +159,6 @@ def enterdbformhtml():
 def printserverinfo(fqdn,hostname,ipaddress,webprotocol,serverport):
 
 	localtime = time.strftime("%Y-%m-%d %H:%M:%S")
-
-	protocol_color = setcolor(webprotocol)
 	
 	print '<b>FQDN:</b> %s<br>' %fqdn
 	print '<b>Hostname:</b> %s<br>' %hostname
@@ -201,7 +172,6 @@ def printdbinfo(fqdn,hostname,ipaddress,webprotocol,serverport,status):
 
 	localtime = time.strftime("%Y-%m-%d %H:%M:%S")
 
-	protocol_color = setcolor(webprotocol)
 	if status == 'Up':
 		print '<b>FQDN:</b> %s<br>' %fqdn
 		print '<b>Hostname:</b> %s<br>' %hostname
@@ -262,27 +232,17 @@ def printsite(modulename,form_name,form_email,form_comments):
 
 			#This print the local web server information
 			if each == '<!-- StartAppServerInfo -->':
-				try:
-					url = "http://%s:8080/ping" %AppServerHostname
-					r = requests.get(url=url,verify=False,timeout=5)
-					#s = socket.socket()
-					#s.settimeout(1)
-					#s.connect((AppServerHostname, 8080))
-					#s.close()
-				except:
-					connectionerror()
-					#url = "http://%s:8080/ping" %AppServerHostname
-					#r = requests.get(url=url,verify=False,timeout=5)
+				check = ("ping -c 1 {}".format(AppServerHostname))
+				result = os.popen(check).read()
+				if not "0 received" in result:
+					try:
+						appserverresponse = urllib.urlopen('http://%s:8080/appserverinfo.py'%AppServerHostname)
+						appserverhtml = removehtmlheaders(appserverresponse.read())
+						print appserverhtml
+					except:
+						connectionerror()
 				else:
-					substring = "pong"
-					r = r.text
-					if substring in r:
-						try:
-							appserverresponse = urllib.urlopen('http://%s:8080/appserverinfo.py'%AppServerHostname)
-							appserverhtml = removehtmlheaders(appserverresponse.read())
-							print appserverhtml
-						except:
-							connectionerror()
+					connectionerror()
 
 
 				#This gets and sets the values for the app server
@@ -290,11 +250,16 @@ def printsite(modulename,form_name,form_email,form_comments):
 			if each == '<!-- StartDBServerInfo -->':
 
 				#This gets and sets the values for the app server 
-				try:
-					dbserverresponse = urllib.urlopen('http://%s:8080/dbserverinfo.py'%AppServerHostname)
-					dbserverhtml = removehtmlheaders(dbserverresponse.read())
-					print dbserverhtml
-				except:
+				check = ("ping -c 1 {}".format(AppServerHostname))
+				result = os.popen(check).read()
+				if not "0 received" in result:
+					try:
+						dbserverresponse = urllib.urlopen('http://%s:8080/dbserverinfo.py'%AppServerHostname)
+						dbserverhtml = removehtmlheaders(dbserverresponse.read())
+						print dbserverhtml
+					except:
+						connectionerror()
+				else:
 					connectionerror()
 
 			if each == '<!-- StartCustom -->':
@@ -302,14 +267,21 @@ def printsite(modulename,form_name,form_email,form_comments):
 					if modulename == 'enterdb':
 						enterdbformhtml()
 					elif modulename == 'commitdb':
+						check = ("ping -c 1 {}".format(AppServerHostname))
+						result = os.popen(check).read()
+						if not "0 received" in result:
+
 						#Here form_name is used as the NAME which was entered into the form
-						try:
-							urlstr = 'http://%s:8080/commitdb-app.py?name=%s&email=%s&comments=%s'%(AppServerHostname,form_name,form_email,form_comments)
-							appserverresponse = urllib.urlopen(urlstr)
-							appserverhtml = removehtmlheaders(appserverresponse.read())
-							print appserverhtml
-						except:
-							printdbservererror()
+							try:
+								urlstr = 'http://%s:8080/commitdb-app.py?name=%s&email=%s&comments=%s'%(AppServerHostname,form_name,form_email,form_comments)
+								appserverresponse = urllib.urlopen(urlstr)
+								appserverhtml = removehtmlheaders(appserverresponse.read())
+								print appserverhtml
+							except:
+								printdbservererror()
+						else:
+							connectionerror()
+
 					else:
 						try:
 							urlstr = 'http://%s:8080/%s.py'%(AppServerHostname,modulename)

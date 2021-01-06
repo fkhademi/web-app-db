@@ -41,7 +41,8 @@ try:
 	<tr>
 	<th scope="col">Name</th>
 	<th scope="col">Email</th>
-	<th scope="col">Date</th>
+	<th scope="col">Start</th>
+	<th scope="col">End</th>
 	<th scope="col">Comment</th>
 	</tr>
 	</thead>
@@ -52,6 +53,7 @@ try:
 		print '<tr>'
 		print '<td>%s</td>' %resp_dict.get('name')
 		print '<td>%s</td>' %resp_dict.get('email')
+		print '<td>%s</td>' %resp_dict.get('starttime')
 		print '<td>%s</td>' %resp_dict.get('completed')
 		print '<td>%s</td>' %resp_dict.get('comment')
 		print '</tr>'
