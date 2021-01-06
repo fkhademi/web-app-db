@@ -6,6 +6,9 @@ import os
 import urllib
 import time
 import ConfigParser
+import requests
+import eventlet
+eventlet.monkey_patch()
 
 # Turn on debug mode.
 import cgitb
@@ -63,7 +66,6 @@ def getserverparam(param_name):
 		#Uncomment the next line if you want to see all of the values that could be used
 		each_value = os.environ[each]
 		each_value_string = str(each_value)
-		#print "<pre>%s=%s</pre>" % (each, each_value_string)
 
 		each_string = str(each)
 
@@ -130,9 +132,6 @@ def getserverinfo():
 	
 	return (hostname,ipaddress,serverprotocol,serverport,servername)
 
-	#IF YOU WANT TO FIGURE OUT WHAT VARIABLES CAN BE USED, UNCOMMENT THE NEXT LINE TO ADD OTHER INFORMATION AND REFRESH THE WEBPAGE
-	# cgi.test() 
-
 def getclientinfo():
 	#Gathers client information
 	clientip = getserverparam('REMOTE_ADDR')
@@ -198,7 +197,6 @@ def printserverinfo(fqdn,hostname,ipaddress,webprotocol,serverport):
 	print '<b>Protocol:</b> %s<br>' %webprotocol
 	print '<b>Port:</b> %s<br>' %serverport
 	print '<b>System Time:</b> %s<br>' %localtime
-	#print '<b>Status:</b><font color="green"> Up</font><br>'
 	connectionworks()
 
 def printdbinfo(fqdn,hostname,ipaddress,webprotocol,serverport,status):
@@ -213,17 +211,8 @@ def printdbinfo(fqdn,hostname,ipaddress,webprotocol,serverport,status):
 		print '<b>Protocol:</b> %s<br>' %webprotocol
 		print '<b>Port:</b> %s<br>' %serverport
 		print '<b>System Time:</b> %s<br>' %localtime
-		#print '<b>Status:</b><font color="green"> %s</font><br>' %status
 		connectionworks()
 	elif status == 'Down':
-		# print '<b>FQDN:</b> %s<br>' %fqdn
-		# print '<b>Hostname:</b> %s<br>' %hostname
-		# print '<b>IPv4:</b> %s<br>'  %ipaddress
-		# print '<b>Protocol:</b> %s<br>' %webprotocol
-		# print '<b>Port:</b> %s<br>' %serverport
-		# print '<b>System Time:</b> n/a<br>'
-		# print '<b>Status:</b><font color="red"> %s</font><br>' %status
-		#print "<center><div class=\"alert alert-danger\" role=\"alert\">DATABASE UNAVAILABLE</div></center>"
 		connectionerror()
 
 def printsite(modulename,form_name,form_email,form_comments):
@@ -256,12 +245,9 @@ def printsite(modulename,form_name,form_email,form_comments):
 			
 			#This prints the server information in the HTML title.
 			if each == '<!-- StartTitleInfo -->':
-
-				# print 'StartTitleInfo' #db
 				print '<title>%s / %s [%s]</title>'%(host,ipaddress,webprotocol)
 
 			if each == '<!-- StartClientInfo -->':
-
 				localtime = time.strftime("%Y-%m-%d %H:%M:%S")
 
 				print '<b>IPv4:</b> %s<br>' %clientipaddress
@@ -278,22 +264,25 @@ def printsite(modulename,form_name,form_email,form_comments):
 
 			#This print the local web server information
 			if each == '<!-- StartAppServerInfo -->':
-
-				#This gets and sets the values for the app server 
 				try:
-					appserverresponse = urllib.urlopen('http://%s:8080/appserverinfo.py'%AppServerHostname)
-					appserverhtml = removehtmlheaders(appserverresponse.read())
-					print appserverhtml
+					with eventlet.Timeout(10):
+						url = "http://%s:8080/ping"
+						r = requests.get(url=url,verify=False, timeout=10)
+						substring = "pong"
+						r = r.text
+						if substring in r:
+							try:
+								appserverresponse = urllib.urlopen('http://%s:8080/appserverinfo.py'%AppServerHostname)
+								appserverhtml = removehtmlheaders(appserverresponse.read())
+								print appserverhtml
+							except:
+								connectionerror()
+						else:
+							connectionerror()
 				except:
-					# print '<b>FQDN:</b> %s<br>' %AppServerHostname
-					# print '<b>Hostname:</b> n/a<br>'
-					# print '<b>IPv4:</b> n/a<br>'
-					# print '<b>Protocol:</b> n/a<br>'
-					# print '<b>Port:</b> n/a<br>'
-					# print '<b>System Time:</b> n/a<br>'
-					# print '<b>Status:</b><font color="red"> Down</font><br>'
-					#print "<center><div class=\"alert alert-danger\" role=\"alert\">APPLICATION UNAVAILABLE</div></center>"
 					connectionerror()
+
+				#This gets and sets the values for the app server
 
 			if each == '<!-- StartDBServerInfo -->':
 
@@ -303,14 +292,6 @@ def printsite(modulename,form_name,form_email,form_comments):
 					dbserverhtml = removehtmlheaders(dbserverresponse.read())
 					print dbserverhtml
 				except:
-					# print '<b>FQDN:</b> %s<br>' %DBHostname
-					# print '<b>Hostname:</b> n/a<br>'
-					# print '<b>IPv4:</b> n/a<br>'
-					# print '<b>Protocol:</b> n/a<br>'
-					# print '<b>Port:</b> n/a<br>'
-					# print '<b>System Time:</b> n/a<br>'
-					# print '<b>Status:</b><font color="red"> Down</font><br>'
-					#print "<center><div class=\"alert alert-danger\" role=\"alert\">DATABASE UNAVAILABLE</div></center>"
 					connectionerror()
 
 			if each == '<!-- StartCustom -->':
