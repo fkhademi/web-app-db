@@ -64,7 +64,7 @@ except:
     <body>
     <table border="1">
     '''
-    appsitefunctions.printdbservererror()
+    appsitefunctions.connectionerror()
 
     print '''
     </table>

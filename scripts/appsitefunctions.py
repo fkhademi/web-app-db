@@ -7,8 +7,6 @@ import urllib
 import time
 import ConfigParser
 import requests
-import eventlet
-eventlet.monkey_patch()
 
 # Turn on debug mode.
 import cgitb
@@ -265,22 +263,27 @@ def printsite(modulename,form_name,form_email,form_comments):
 			#This print the local web server information
 			if each == '<!-- StartAppServerInfo -->':
 				try:
-					with eventlet.Timeout(10):
-						url = "http://%s:8080/ping"
-						r = requests.get(url=url,verify=False, timeout=10)
-						substring = "pong"
-						r = r.text
-						if substring in r:
-							try:
-								appserverresponse = urllib.urlopen('http://%s:8080/appserverinfo.py'%AppServerHostname)
-								appserverhtml = removehtmlheaders(appserverresponse.read())
-								print appserverhtml
-							except:
-								connectionerror()
-						else:
-							connectionerror()
+					url = "http://%s:8080/ping" %AppServerHostname
+					r = requests.get(url=url,verify=False,timeout=5)
+					#s = socket.socket()
+					#s.settimeout(1)
+					#s.connect((AppServerHostname, 8080))
+					#s.close()
 				except:
 					connectionerror()
+					#url = "http://%s:8080/ping" %AppServerHostname
+					#r = requests.get(url=url,verify=False,timeout=5)
+				else:
+					substring = "pong"
+					r = r.text
+					if substring in r:
+						try:
+							appserverresponse = urllib.urlopen('http://%s:8080/appserverinfo.py'%AppServerHostname)
+							appserverhtml = removehtmlheaders(appserverresponse.read())
+							print appserverhtml
+						except:
+							connectionerror()
+
 
 				#This gets and sets the values for the app server
 
