@@ -28,7 +28,7 @@ def importconfiguration ():
 
 def printappservererror():
 
-	print "<div class=\"alert alert-danger\" role=\"alert\">ERROR: APPLICATION SERVER UNAVAILABLE</div>"
+	print "<center><div class=\"alert alert-danger\" role=\"alert\">ERROR: APPLICATION SERVER UNAVAILABLE</div></center>"
 
 def printdbservererror():
 
@@ -41,11 +41,19 @@ def printdbservererror():
 	<title></title>
 	</head>
 	<body>
+	<center>
 	<div class="alert alert-danger" role="alert">ERROR: DATABASE SERVER UNAVAILABLE</div>
-
+	</center>
 	</body>
 	</html>
 	'''
+
+def connectionerror():
+	print "<center><div class=\"alert alert-danger\" role=\"alert\">STATUS: DOWN</div></center>"
+
+def connectionworks():
+	print "<center><div class=\"alert alert-success\" role=\"alert\">STATUS: UP</div></center>"
+
 
 def getserverparam(param_name):
 
@@ -155,20 +163,20 @@ def getdbinfo():
 
 def enterdbformhtml():
 	
-	print '''<div class="container" margin:0 auto;>
+	print '''<div class="container" style="width:600px"; margin:0 auto;>
 	<form action="commitdb-web.py" method="POST" id="usrform">
 
-	<div class="form-group" style="width:600px;> <!-- Name field -->
+	<div class="form-group"> <!-- Name field -->
 		<label class="control-label " for="name">* Name</label>
 		<input class="form-control" id="name" name="name" type="text" required="required"/>
 	</div>
 	
-	<div class="form-group" style="width:600px;> <!-- Email field -->
+	<div class="form-group"> <!-- Email field -->
 		<label class="control-label " for="email">* Email</label>
 		<input class="form-control" id="email" name="email" type="email" required="required"/>
 	</div>
 	
-	<div class="form-group" style="width:600px;> <!-- Comments field -->
+	<div class="form-group"> <!-- Comments field -->
 		<label class="control-label " for="comments">Comments</label>
 		<textarea class="form-control" cols="40" id="comments" name="comments" rows="10"></textarea>
 	</div>
@@ -190,7 +198,8 @@ def printserverinfo(fqdn,hostname,ipaddress,webprotocol,serverport):
 	print '<b>Protocol:</b> %s<br>' %webprotocol
 	print '<b>Port:</b> %s<br>' %serverport
 	print '<b>System Time:</b> %s<br>' %localtime
-	print '<b>Status:</b><font color="green"> Up</font><br>'
+	#print '<b>Status:</b><font color="green"> Up</font><br>'
+	connectionworks()
 
 def printdbinfo(fqdn,hostname,ipaddress,webprotocol,serverport,status):
 
@@ -204,15 +213,18 @@ def printdbinfo(fqdn,hostname,ipaddress,webprotocol,serverport,status):
 		print '<b>Protocol:</b> %s<br>' %webprotocol
 		print '<b>Port:</b> %s<br>' %serverport
 		print '<b>System Time:</b> %s<br>' %localtime
-		print '<b>Status:</b><font color="green"> %s</font><br>' %status
+		#print '<b>Status:</b><font color="green"> %s</font><br>' %status
+		connectionworks()
 	elif status == 'Down':
-		print '<b>FQDN:</b> %s<br>' %fqdn
-		print '<b>Hostname:</b> %s<br>' %hostname
-		print '<b>IPv4:</b> %s<br>'  %ipaddress
-		print '<b>Protocol:</b> %s<br>' %webprotocol
-		print '<b>Port:</b> %s<br>' %serverport
-		print '<b>System Time:</b> n/a<br>'
-		print '<b>Status:</b><font color="red"> %s</font><br>' %status
+		# print '<b>FQDN:</b> %s<br>' %fqdn
+		# print '<b>Hostname:</b> %s<br>' %hostname
+		# print '<b>IPv4:</b> %s<br>'  %ipaddress
+		# print '<b>Protocol:</b> %s<br>' %webprotocol
+		# print '<b>Port:</b> %s<br>' %serverport
+		# print '<b>System Time:</b> n/a<br>'
+		# print '<b>Status:</b><font color="red"> %s</font><br>' %status
+		#print "<center><div class=\"alert alert-danger\" role=\"alert\">DATABASE UNAVAILABLE</div></center>"
+		connectionerror()
 
 def printsite(modulename,form_name,form_email,form_comments):
 
@@ -273,13 +285,15 @@ def printsite(modulename,form_name,form_email,form_comments):
 					appserverhtml = removehtmlheaders(appserverresponse.read())
 					print appserverhtml
 				except:
-					print '<b>FQDN:</b> %s<br>' %AppServerHostname
-					print '<b>Hostname:</b> n/a<br>'
-					print '<b>IPv4:</b> n/a<br>'
-					print '<b>Protocol:</b> n/a<br>'
-					print '<b>Port:</b> n/a<br>'
-					print '<b>System Time:</b> n/a<br>'
-					print '<b>Status:</b><font color="red"> Down</font><br>'
+					# print '<b>FQDN:</b> %s<br>' %AppServerHostname
+					# print '<b>Hostname:</b> n/a<br>'
+					# print '<b>IPv4:</b> n/a<br>'
+					# print '<b>Protocol:</b> n/a<br>'
+					# print '<b>Port:</b> n/a<br>'
+					# print '<b>System Time:</b> n/a<br>'
+					# print '<b>Status:</b><font color="red"> Down</font><br>'
+					#print "<center><div class=\"alert alert-danger\" role=\"alert\">APPLICATION UNAVAILABLE</div></center>"
+					connectionerror()
 
 			if each == '<!-- StartDBServerInfo -->':
 
@@ -289,13 +303,15 @@ def printsite(modulename,form_name,form_email,form_comments):
 					dbserverhtml = removehtmlheaders(dbserverresponse.read())
 					print dbserverhtml
 				except:
-					print '<b>FQDN:</b> %s<br>' %DBHostname
-					print '<b>Hostname:</b> n/a<br>'
-					print '<b>IPv4:</b> n/a<br>'
-					print '<b>Protocol:</b> n/a<br>'
-					print '<b>Port:</b> n/a<br>'
-					print '<b>System Time:</b> n/a<br>'
-					print '<b>Status:</b><font color="red"> Down</font><br>'
+					# print '<b>FQDN:</b> %s<br>' %DBHostname
+					# print '<b>Hostname:</b> n/a<br>'
+					# print '<b>IPv4:</b> n/a<br>'
+					# print '<b>Protocol:</b> n/a<br>'
+					# print '<b>Port:</b> n/a<br>'
+					# print '<b>System Time:</b> n/a<br>'
+					# print '<b>Status:</b><font color="red"> Down</font><br>'
+					#print "<center><div class=\"alert alert-danger\" role=\"alert\">DATABASE UNAVAILABLE</div></center>"
+					connectionerror()
 
 			if each == '<!-- StartCustom -->':
 				if modulename != None:
@@ -320,3 +336,4 @@ def printsite(modulename,form_name,form_email,form_comments):
 							printappservererror()			
 	else:
 		print 'ERROR: Base HTML file ', os.path.realpath('base.html'), 'is missing'
+

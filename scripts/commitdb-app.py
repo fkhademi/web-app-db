@@ -46,7 +46,9 @@ if __name__ == '__main__':
         </head>
         <body>
         <table border="1">
+        <center>
     	<div class="alert alert-success" role="alert">Successfully updated the DB!</div>
+        </center>
         </table>
         </body>
         </html>

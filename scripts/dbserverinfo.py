@@ -55,4 +55,19 @@ try:
         </html>
         '''
 except:
+    print '''
+    <Content-type: text/html\\n\\n>
+    <html>
+    <head>
+    <title>Multi-Tier Web App</title>
+    </head>
+    <body>
+    <table border="1">
+    '''
     appsitefunctions.printdbservererror()
+
+    print '''
+    </table>
+    </body>
+    </html>
+    '''
