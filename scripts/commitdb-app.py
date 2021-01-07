@@ -49,9 +49,14 @@ def get_start_time(id, dynamodb=None):
             'id': id
         }
     )
-    json_str = json.dumps(response['Item'], cls=DecimalEncoder)
-    resp_dict = json.loads(json_str)
-    return(resp_dict.get('starttime'))
+    # If the start time is not found, add a default one
+    try:
+        json_str = json.dumps(response['Item'], cls=DecimalEncoder)
+    except:
+        return("2000-01-01T00:00:00.000000")
+    else:
+        resp_dict = json.loads(json_str)
+        return(resp_dict.get('starttime'))
 
 if __name__ == '__main__':
 
@@ -64,7 +69,7 @@ if __name__ == '__main__':
     id = "%s-%s-%s" %(now.year, now.month, now.day)
     # Query the table to find the start time on this specific day
     start_time = get_start_time(id)
-
+        
     put_resp = put_new_record(arg1, arg2, arg3, start_time)
     print '''
     <Content-type: text/html\\n\\n>
