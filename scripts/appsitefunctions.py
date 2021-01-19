@@ -183,6 +183,11 @@ def printdbinfo(fqdn,hostname,ipaddress,webprotocol,serverport,status):
 	elif status == 'Down':
 		connectionerror()
 
+def printdbstatus():
+
+	if status == 'Down':
+		print 'disabled'
+
 def printsite(modulename,form_name,form_email,form_comments):
 
 	if os.path.exists('base.html'):
@@ -261,6 +266,12 @@ def printsite(modulename,form_name,form_email,form_comments):
 						connectionerror()
 				else:
 					connectionerror()
+
+			if each == '<!-- DisabledButton -->':
+				dbstatus = urllib.urlopen('http://%s:8080/dbstatus.py'%AppServerHostname)
+				#dbserverhtml = removehtmlheaders(dbserverresponse.read())
+				if dbstatus == 'Down':
+					print 'disabled'
 
 			if each == '<!-- StartCustom -->':
 				if modulename != None:

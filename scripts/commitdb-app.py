@@ -8,6 +8,19 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 import cgi
 import os.path
 from datetime import datetime
+import ConfigParser
+
+#loads data from the mtwa.conf file to be used in the application
+def get_pod_id (): 
+	if os.path.exists('/etc/avx/avx.conf'):
+		configParser = ConfigParser.RawConfigParser()   
+		configFilePath = r'/etc/avx/avx.conf'
+		configParser.read(configFilePath)
+
+		pod_id = configParser.get('pod-id', 'PodID')
+		return (pod_id)
+	else:
+		print 'ERROR: AVX config file ', os.path.realpath('/etc/avx/avx.conf'), 'not found!'
 
 
 print("Content-Type: text/html\n\r\n")
@@ -21,7 +34,7 @@ class DecimalEncoder(json.JSONEncoder):
                 return int(o)
         return super(DecimalEncoder, self).default(o)
 
-def put_new_record(name, email, comment, start_time, dynamodb=None):
+def put_new_record(name, email, comment, start_time, pod_id, dynamodb=None):
     # Insert a new record in DynamoDB
     if not dynamodb:
         dynamodb = boto3.resource('dynamodb', region_name='eu-central-1', verify=False)
@@ -33,7 +46,8 @@ def put_new_record(name, email, comment, start_time, dynamodb=None):
             'email': email,
             'completed': datetime.utcnow().isoformat(),
             'comment': comment,
-            'starttime': start_time
+            'starttime': start_time,
+            'pod': pod_id
         }
     )
     print("Adding new entry:", name, comment)
@@ -64,13 +78,14 @@ if __name__ == '__main__':
     arg1 = form.getvalue('name')
     arg2 = form.getvalue('email')
     arg3 = form.getvalue('comments')
+    pod_id = get_pod_id()
     # Get the date
     now = datetime.now()
     id = "%s-%s-%s" %(now.year, now.month, now.day)
     # Query the table to find the start time on this specific day
     start_time = get_start_time(id)
         
-    put_resp = put_new_record(arg1, arg2, arg3, start_time)
+    put_resp = put_new_record(arg1, arg2, arg3, start_time, pod_id)
     print '''
     <Content-type: text/html\\n\\n>
     <html>

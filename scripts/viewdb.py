@@ -7,6 +7,7 @@ import decimal
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from datetime import datetime
+import ConfigParser
 
 
 
@@ -44,7 +45,7 @@ try:
 	<th scope="col">Email</th>
 	<th scope="col">Start</th>
 	<th scope="col">End</th>
-	<th scope="col">Time</th>
+	<th scope="col">Time (s)</th>
 	<th scope="col">Comment</th>
 	</tr>
 	</thead>
@@ -58,23 +59,18 @@ try:
 			start_obj = datetime.strptime(start, '%Y-%m-%dT%H:%M:%S.%f')
 		except:
 			start_obj = datetime.strptime("2000-01-01T00:00:00.000000", '%Y-%m-%dT%H:%M:%S.%f')
-			start = "2000-01-01 00:00:00"
-		else:
-		 	start = "%s-%s-%s %s:%s:%s" %(start_obj.year, start_obj.month, start_obj.day, start_obj.hour, start_obj.minute, start_obj.second)
 		try:
 			end_obj = datetime.strptime(end, '%Y-%m-%dT%H:%M:%S.%f')
 		except:
 			end_obj = datetime.strptime("2021-01-01T00:00:00.000000", '%Y-%m-%dT%H:%M:%S.%f')
-			end = "2021-01-01 00:00:00"
-		else:
-			end = "%s-%s-%s %s:%s:%s" %(end_obj.year, end_obj.month, end_obj.day, end_obj.hour, end_obj.minute, end_obj.second)
+		
 		time = (end_obj - start_obj).total_seconds()
 		print '<tr>'
 		print '<td>%s</td>' %resp_dict.get('name')
 		print '<td>%s</td>' %resp_dict.get('email')
-		print '<td>%s</td>' %start
-		print '<td>%s</td>' %end
-		print '<td>%s</td>' %time
+		print '<td>%s</td>' %start_obj
+		print '<td>%s</td>' %end_obj
+		print '<td>%s</td>' %round(time,2)
 		print '<td>%s</td>' %resp_dict.get('comment')
 		print '</tr>'
 
