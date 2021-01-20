@@ -25,67 +25,73 @@ def get_pod_id ():
 
 print("Content-Type: text/html\n\r\n")
 
-class DecimalEncoder(json.JSONEncoder):
-    def default(self, o):
-        if isinstance(o, decimal.Decimal):
-            if o % 1 > 0:
-                return float(o)
-            else:
-                return int(o)
-        return super(DecimalEncoder, self).default(o)
-
-def put_new_record(name, email, comment, start_time, pod_id, dynamodb=None):
+def put_new_record(name, company, email, comment, start_time, user_id, dynamodb=None):
     # Insert a new record in DynamoDB
     if not dynamodb:
         dynamodb = boto3.resource('dynamodb', region_name='eu-central-1', verify=False)
 
-    table = dynamodb.Table('build')
+    table = dynamodb.Table('pod_history')
+    now = datetime.now()
+    now = now.strftime("%Y-%m-%dT%H:%M:%S")
     response = table.put_item(
        Item={
-            'name': name,
+            'full_name': name,
             'email': email,
-            'completed': datetime.utcnow().isoformat(),
+            'completed': now,
+            'company': company,
             'comment': comment,
-            'starttime': start_time,
-            'pod': pod_id
+            'start_time': start_time,
+            #'id': id,
+            'user_id': user_id
         }
     )
     print("Adding new entry:", name, comment)
 
-def get_start_time(id, dynamodb=None):
+def get_user_id(pod_num):
+    # Get the user ID
+    now = datetime.now()
+    id = "%s-%s-%s" % (now.year, '{:02d}'.format(now.month), '{:02d}'.format(now.day))
+    padded_pod_num = str(pod_num).zfill(3)
+    # Set User ID
+    user_id = "%s-%s" %(id, padded_pod_num)
+    return(user_id)
+
+def get_attributes(user_id, dynamodb=None):
     # Get the Start Time from the Build Class stored in the buildstart table
     if not dynamodb:
         dynamodb = boto3.resource('dynamodb', region_name='eu-central-1', verify=False)
 
-    table = dynamodb.Table('buildstart')
+    table = dynamodb.Table('pod_history')
     response = table.get_item(
        Key={
-            'id': id
+            'user_id': user_id
         }
     )
     # If the start time is not found, add a default one
-    try:
-        json_str = json.dumps(response['Item'], cls=DecimalEncoder)
-    except:
-        return("2000-01-01T00:00:00.000000")
-    else:
-        resp_dict = json.loads(json_str)
-        return(resp_dict.get('starttime'))
+    full_name = response['Item']['full_name']
+    company = response['Item']['company']
+    email = response['Item']['email']
+    #id = response['Item']['id']
+    start_time = response['Item']['start_time']
+
+    return(full_name, company, email, id, start_time)
 
 if __name__ == '__main__':
 
     form = cgi.FieldStorage()
-    arg1 = form.getvalue('name')
-    arg2 = form.getvalue('email')
-    arg3 = form.getvalue('comments')
-    pod_id = get_pod_id()
-    # Get the date
-    now = datetime.now()
-    id = "%s-%s-%s" %(now.year, now.month, now.day)
-    # Query the table to find the start time on this specific day
-    start_time = get_start_time(id)
-        
-    put_resp = put_new_record(arg1, arg2, arg3, start_time, pod_id)
+    comments = form.getvalue('comments')
+
+    pod_num = get_pod_id()
+    user_id = get_user_id(pod_num)
+
+    attributes = get_attributes(user_id)
+    full_name = attributes[0]
+    company = attributes[1]
+    email = attributes[2]
+    #id = attributes[3]
+    start_time = attributes[4]
+
+    put_resp = put_new_record(full_name, company, email, comments, start_time, user_id)
     print '''
     <Content-type: text/html\\n\\n>
     <html>

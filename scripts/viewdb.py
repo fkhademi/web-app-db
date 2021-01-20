@@ -23,7 +23,7 @@ class DecimalEncoder(json.JSONEncoder):
 
 try:
 	dynamodb = boto3.resource('dynamodb', 'eu-central-1', verify=False)
-	table = dynamodb.Table('build')
+	table = dynamodb.Table('pod_history')
 	response = table.scan()
 
 	print '''
@@ -41,8 +41,9 @@ try:
 	<table class="table table-hover">
 	<thead>
 	<tr>
+	<th scope="col">ID</th>
 	<th scope="col">Name</th>
-	<th scope="col">Email</th>
+	<th scope="col">Company</th>
 	<th scope="col">Start</th>
 	<th scope="col">End</th>
 	<th scope="col">Time (s)</th>
@@ -53,21 +54,22 @@ try:
 	for i in response['Items']:
 		json_str = json.dumps(i, cls=DecimalEncoder)
 		resp_dict = json.loads(json_str)
-		start = resp_dict.get('starttime')
+		start = resp_dict.get('start_time')
 		end = resp_dict.get('completed')
 		try:
-			start_obj = datetime.strptime(start, '%Y-%m-%dT%H:%M:%S.%f')
+			start_obj = datetime.strptime(start, '%Y-%m-%dT%H:%M:%S')
 		except:
-			start_obj = datetime.strptime("2000-01-01T00:00:00.000000", '%Y-%m-%dT%H:%M:%S.%f')
+			start_obj = datetime.strptime("2000-01-01T00:00:00", '%Y-%m-%dT%H:%M:%S')
 		try:
-			end_obj = datetime.strptime(end, '%Y-%m-%dT%H:%M:%S.%f')
+			end_obj = datetime.strptime(end, '%Y-%m-%dT%H:%M:%S')
 		except:
-			end_obj = datetime.strptime("2021-01-01T00:00:00.000000", '%Y-%m-%dT%H:%M:%S.%f')
+			end_obj = datetime.strptime("2021-01-01T00:00:00", '%Y-%m-%dT%H:%M:%S')
 		
 		time = (end_obj - start_obj).total_seconds()
 		print '<tr>'
-		print '<td>%s</td>' %resp_dict.get('name')
-		print '<td>%s</td>' %resp_dict.get('email')
+		print '<td>%s</td>' %resp_dict.get('user_id')
+		print '<td>%s</td>' %resp_dict.get('full_name')
+		print '<td>%s</td>' %resp_dict.get('company')
 		print '<td>%s</td>' %start_obj
 		print '<td>%s</td>' %end_obj
 		print '<td>%s</td>' %round(time,2)
