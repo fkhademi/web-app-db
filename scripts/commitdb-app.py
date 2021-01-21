@@ -17,7 +17,6 @@ def get_pod_id ():
 		configParser = ConfigParser.RawConfigParser()   
 		configFilePath = r'/etc/avx/avx.conf'
 		configParser.read(configFilePath)
-
 		pod_id = configParser.get('pod-id', 'PodID')
         logging.warn('Get_pod_id POD ID is %s', pod_id)
         pod_id = pod_id.strip("pod")
