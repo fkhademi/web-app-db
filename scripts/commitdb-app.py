@@ -10,6 +10,7 @@ import os.path
 from datetime import datetime
 import ConfigParser
 
+
 #loads data from the mtwa.conf file to be used in the application
 def get_pod_id (): 
 	if os.path.exists('/etc/avx/avx.conf'):
