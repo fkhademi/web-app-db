@@ -19,6 +19,7 @@ def get_pod_id ():
 		pod_id = configParser.get('pod-id', 'PodID')
         pod_id = pod_id.strip("pod")
         return (pod_id)
+ 
 	else:
 		print 'ERROR: AVX config file ', os.path.realpath('/etc/avx/avx.conf'), 'not found!'
 
