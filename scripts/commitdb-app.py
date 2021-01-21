@@ -13,15 +13,15 @@ import ConfigParser
 
 #loads data from the mtwa.conf file to be used in the application
 def get_pod_id (): 
-	if os.path.exists('/etc/avx/avx.conf'):
-		configParser = ConfigParser.RawConfigParser()   
-		configFilePath = r'/etc/avx/avx.conf'
-		configParser.read(configFilePath)
-		pod_id = configParser.get('pod-id', 'PodID')
-        return (pod_id)
-        #pod_id = pod_id.strip("pod")
-	else:
-		print 'ERROR: AVX config file ', os.path.realpath('/etc/avx/avx.conf'), 'not found!'
+  if os.path.exists('/etc/avx/avx.conf'):
+    configParser = ConfigParser.RawConfigParser()   
+    configFilePath = r'/etc/avx/avx.conf'
+    configParser.read(configFilePath)
+    pod_id = configParser.get('pod-id', 'PodID')
+    pod_id = pod_id.strip("pod")
+    return (pod_id)
+  else:
+    print 'ERROR: AVX config file ', os.path.realpath('/etc/avx/avx.conf'), 'not found!'
 
 
 print("Content-Type: text/html\n\r\n")
@@ -84,7 +84,6 @@ if __name__ == '__main__':
     comments = form.getvalue('comments')
 
     pod_num = get_pod_id()
-    pod_num = pod_num.strip("pod")
     user_id = get_user_id(pod_num)
 
     attributes = get_attributes(user_id)
