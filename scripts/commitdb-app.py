@@ -55,7 +55,6 @@ def get_user_id(pod_num):
     padded_pod_num = str(pod_num).zfill(3)
     # Set User ID
     user_id = "%s-%s" %(id, padded_pod_num)
-    logging.info('[INFO] get_user_id returns UID %s', user_id)
     return(user_id)
 
 def get_attributes(user_id, dynamodb=None):
