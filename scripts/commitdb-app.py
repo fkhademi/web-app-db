@@ -21,7 +21,7 @@ def get_pod_id ():
         logging.warn('Get_pod_id POD ID is %s', pod_id)
         pod_id = pod_id.strip("pod")
         logging.warn('Get_pod_id POD ID is %s', pod_id)
-		return (pod_id)
+        return (pod_id)
 	else:
 		print 'ERROR: AVX config file ', os.path.realpath('/etc/avx/avx.conf'), 'not found!'
 
