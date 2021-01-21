@@ -9,7 +9,6 @@ import cgi
 import os.path
 from datetime import datetime
 import ConfigParser
-import logging
 
 #loads data from the mtwa.conf file to be used in the application
 def get_pod_id (): 
@@ -18,11 +17,8 @@ def get_pod_id ():
 		configFilePath = r'/etc/avx/avx.conf'
 		configParser.read(configFilePath)
 		pod_id = configParser.get('pod-id', 'PodID')
-        logging.warn('Get_pod_id POD ID is %s', pod_id)
         pod_id = pod_id.strip("pod")
-        logging.warn('Get_pod_id POD ID is %s', pod_id)
         return (pod_id)
-
 	else:
 		print 'ERROR: AVX config file ', os.path.realpath('/etc/avx/avx.conf'), 'not found!'
 
