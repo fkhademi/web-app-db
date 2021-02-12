@@ -3,8 +3,33 @@
 <html>
 
 <head>
+  <script src="sorttable.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <style>
+  #t01 {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  #t01 td, #t01 th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  #t01 tr:nth-child(even){background-color: #f2f2f2;}
+  
+  #t01 tr:hover {background-color: #ddd;}
+  
+  #t01 th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+  }
+  </style>
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
     <!-- DO NOT DELETE THE LINE BELOW! -->
 <!-- StartTitleInfo -->
@@ -26,7 +51,7 @@
     <table>
         <tr>
         <td><form action="index.py"><input type="hidden"><input class="btn btn-outline-dark" type="submit" value="Refresh Page"></form></td>
-        <td><form action="index.py"><input type="hidden" name="module" value="viewdb"><input class="btn btn-outline-dark" type="submit" value="Query Database"></form></td>
+        <td><form action="index.py"><input type="hidden" name="module" value="viewdb"><input class="btn btn-outline-dark" type="submit" value="Wall of Fame!"></form></td>
         <td><form action="index.py"><input type="hidden" name="module" value="enterdb"><input class="btn btn-outline-dark" type="submit" value="Enter Data"></form></td>
         </tr>
     </table>

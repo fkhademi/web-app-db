@@ -8,6 +8,7 @@ import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from datetime import datetime
 import ConfigParser
+import os, sys
 
 
 
@@ -37,8 +38,8 @@ try:
 	'''
 
 	#Start printing the html for the header row
-	print '''<center><h3>Wall of Fame</h3></center>
-	<table class="table table-hover">
+	print '''<center><h3>Build Wall of Fame</h3></center>
+	<table class="sortable" id="t01">
 	<thead>
 	<tr>
 	<th scope="col">ID</th>
@@ -54,27 +55,41 @@ try:
 	for i in response['Items']:
 		json_str = json.dumps(i, cls=DecimalEncoder)
 		resp_dict = json.loads(json_str)
+		## put dynamodb values into vars
+		user_id = resp_dict.get('user_id')
+		full_name = resp_dict.get('full_name')
+		company = resp_dict.get('company')
+		company = company.encode('utf-8')
+		comment = resp_dict.get('comment')
 		start = resp_dict.get('start_time')
 		end = resp_dict.get('completed')
 		try:
 			start_obj = datetime.strptime(start, '%Y-%m-%dT%H:%M:%S')
 		except:
-			start_obj = datetime.strptime("2000-01-01T00:00:00", '%Y-%m-%dT%H:%M:%S')
+			#start_obj = datetime.strptime("2000-01-01T00:00:00", '%Y-%m-%dT%H:%M:%S')
+			start_obj = "none"
 		try:
 			end_obj = datetime.strptime(end, '%Y-%m-%dT%H:%M:%S')
 		except:
-			end_obj = datetime.strptime("2021-01-01T00:00:00", '%Y-%m-%dT%H:%M:%S')
+			#end_obj = datetime.strptime("2021-01-01T00:00:00", '%Y-%m-%dT%H:%M:%S')
+			end_obj = "none"
 		
-		time = (end_obj - start_obj).total_seconds()
-		print '<tr>'
-		print '<td>%s</td>' %resp_dict.get('user_id')
-		print '<td>%s</td>' %resp_dict.get('full_name')
-		print '<td>%s</td>' %resp_dict.get('company')
-		print '<td>%s</td>' %start_obj
-		print '<td>%s</td>' %end_obj
-		print '<td>%s</td>' %round(time,2)
-		print '<td>%s</td>' %resp_dict.get('comment')
-		print '</tr>'
+		if start_obj == "none" or end_obj == "none":
+			time = "none"
+		else:
+			time = (end_obj - start_obj).total_seconds()
+			time = round(time,2)
+
+
+			print '<tr>'
+			print '<td>%s</td>' %user_id
+			print '<td>%s</td>' %full_name
+			print '<td>%s</td>' %company #resp_dict.get('company')
+			print '<td>%s</td>' %start_obj
+			print '<td>%s</td>' %end_obj
+			print '<td>%s</td>' %time #round(time,2)
+			print '<td>%s</td>' %comment
+			print '</tr>'
 
 	print '''</tbody>
 	/table>
