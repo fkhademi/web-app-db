@@ -9,8 +9,10 @@ cgitb.enable()
 
 #This will figure out what module to call based on the URL passed.  /index.py?module=viewdb for example
 form = cgi.FieldStorage()
-name = form.getvalue('name')
-email = form.getvalue('email')
+#name = form.getvalue('name')
+#email = form.getvalue('email')
+name = "test"
+email = "test"
 comments = form.getvalue('comments')
 # print form, "<!-- (DEBUG) -->"
 

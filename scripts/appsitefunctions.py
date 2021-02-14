@@ -132,19 +132,10 @@ def getdbinfo():
 
 
 def enterdbformhtml():
-	
-	print '''<div class="container" style="width:600px"; margin:0 auto;>
-	<form action="commitdb-web.py" method="POST" id="usrform">
 
-	<div class="form-group"> <!-- Name field -->
-		<label class="control-label " for="name">* Name</label>
-		<input class="form-control" id="name" name="name" type="text" required="required"/>
-	</div>
-	
-	<div class="form-group"> <!-- Email field -->
-		<label class="control-label " for="email">* Email</label>
-		<input class="form-control" id="email" name="email" type="email" required="required"/>
-	</div>
+	print '''<center><h3>Sign in to the Wall of Fame!</h3></center>
+	<div class="container" style="width:600px"; margin:0 auto;>
+	<form action="commitdb-web.py" method="POST" id="usrform">
 	
 	<div class="form-group"> <!-- Comments field -->
 		<label class="control-label " for="comments">Comments</label>
@@ -152,7 +143,7 @@ def enterdbformhtml():
 	</div>
 	
 	<div class="form-group">
-		<button class="btn btn-primary " name="submit" type="submit">Submit</button>
+		<button class="btn btn-primary" name="submit" type="submit">Submit</button>
 	</div>
 	</form>'''
 
@@ -284,7 +275,7 @@ def printsite(modulename,form_name,form_email,form_comments):
 
 						#Here form_name is used as the NAME which was entered into the form
 							try:
-								urlstr = 'http://%s:8080/commitdb-app.py?name=%s&email=%s&comments=%s'%(AppServerHostname,form_name,form_email,form_comments)
+								urlstr = 'http://%s:8080/commitdb-app.py?name=test&email=test&comments=%s'%(AppServerHostname,form_comments)
 								appserverresponse = urllib.urlopen(urlstr)
 								appserverhtml = removehtmlheaders(appserverresponse.read())
 								print appserverhtml
